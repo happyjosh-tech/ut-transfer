@@ -1,5 +1,6 @@
 ALTER PROCEDURE [transfer].[pendingTransfers.get] -- this sp gets transactions pending approval
     @userAvailableAccounts core.arrayList READONLY, -- available accounts for the user maiking the operation
+    @beneficiaryName NVARCHAR(200) = NULL, -- filter by beneficiary name
     @pageSize INT = 25, -- how many rows will be returned per page
     @pageNumber INT = 1, -- which page number to display
     @orderBy core.orderByTT READONLY, -- what kind of sort to be used ascending or descending & on which column results to be sorted
@@ -55,6 +56,7 @@ BEGIN TRY
             t.sourceAccount AS sourceAccount,
             t.destinationAccount AS destinationAccount,
             tp.initiatorName,
+            t.destinationAccountHolder,
             ROW_NUMBER() OVER ( ORDER BY
                 CASE
                     WHEN @sortOrder = 'ASC' THEN
@@ -88,6 +90,7 @@ BEGIN TRY
         core.itemName cin ON cin.itemNameId = t.transferTypeId
     WHERE
         tp.[status] = 1
+        AND (@beneficiaryName IS NULL OR t.destinationAccountHolder LIKE '%' + @beneficiaryName + '%')
     )
     SELECT
         typeTransaction,
@@ -102,6 +105,7 @@ BEGIN TRY
         sourceAccount,
         destinationAccount,
         initiatorName,
+        destinationAccountHolder AS beneficiaryName,
         rowNum,
         recordsTotal,
         COUNT(*) OVER (PARTITION BY 1) AS recordsPageTotal
@@ -124,6 +128,7 @@ BEGIN TRY
         sourceAccount,
         destinationAccount,
         initiatorName,
+        beneficiaryName,
         rowNum,
         recordsTotal,
         recordsPageTotal
