@@ -4,6 +4,7 @@ module.exports = {
     description: 'Fetches pending transfers',
     params: joi.object().keys({
         userAvailableAccounts: joi.array().items(joi.string()),
+        beneficiaryName: joi.string().optional().allow(null),
         pageSize: joi.number(),
         pageNumber: joi.number(),
         orderBy: joi.object().keys({
