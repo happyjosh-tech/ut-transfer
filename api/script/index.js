@@ -233,6 +233,7 @@ module.exports = {
                         transfer.transferIdMerchant = merchantResult.transferIdMerchant;
                         merchantResult.transferId = transfer.transferId;
                         merchantResult.transferIdMerchant = transfer.transferIdMerchant;
+                        transfer.merchantOriginalResponse = merchantResult; // CR: VFZ-883 - Integration with MTN Zambia - pass the original third-party's (MTN/Airtel) response down to a caller.
                         return merchantResult;
                     })
                     .catch(handleError(transfer, 'Merchant'))
