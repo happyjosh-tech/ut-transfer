@@ -563,8 +563,8 @@ module.exports = function transferFlow({utError: {fetchErrors}}) {
                     destinationTypeId: params.destinationTypeId,
                     destinationAccount: params.destinationAccount,
                     destinationAccountType: params.destinationAccountType,
-                    pinOffset: params.pinOffset,
-                    pinOffsetNew: params.pinOffsetNew,
+                    pinOk: params.pinOk,
+                    pinCheckValueNew: params.pinCheckValueNew,
                     mode: params.mode
                 }, {forward})
                     .then(result => {
