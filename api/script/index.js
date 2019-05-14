@@ -553,7 +553,17 @@ module.exports = function transferFlow({utError: {fetchErrors}}) {
         'transferFlow.card.execute': function(params, $meta) {
             let {forward} = $meta;
             if (params.abortAcquirer) {
-                return this.bus.importMethod('transferFlow.push.execute')(params, $meta);
+                let promise;
+                switch (params.abortAcquirer.type) {
+                    case 'payshield.verifyTermPinIbm.01':
+                        promise = this.bus.importMethod('db/atm.card.processError')({cardId: params.cardId}, $meta);
+                        break;
+                    default:
+                        promise = Promise.resolve();
+                        break;
+                }
+                return promise
+                    .then(() => this.bus.importMethod('transferFlow.push.execute')(params, $meta));
             } else {
                 return this.bus.importMethod('db/atm.card.check[0]')({
                     cardId: params.cardId,
@@ -563,7 +573,6 @@ module.exports = function transferFlow({utError: {fetchErrors}}) {
                     destinationTypeId: params.destinationTypeId,
                     destinationAccount: params.destinationAccount,
                     destinationAccountType: params.destinationAccountType,
-                    pinOk: params.pinOk,
                     pinCheckValueNew: params.pinCheckValueNew,
                     mode: params.mode
                 }, {forward})
