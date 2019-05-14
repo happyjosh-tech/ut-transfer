@@ -552,8 +552,8 @@ module.exports = function transferFlow({utError: {fetchErrors}}) {
         },
         'transferFlow.card.execute': function(params, $meta) {
             let {forward} = $meta;
+            let promise;
             if (params.abortAcquirer) {
-                let promise;
                 switch (params.abortAcquirer.type) {
                     case 'payshield.verifyTermPinIbm.01':
                         promise = this.bus.importMethod('db/atm.card.processError')({cardId: params.cardId}, $meta);
@@ -562,10 +562,8 @@ module.exports = function transferFlow({utError: {fetchErrors}}) {
                         promise = Promise.resolve();
                         break;
                 }
-                return promise
-                    .then(() => this.bus.importMethod('transferFlow.push.execute')(params, $meta));
             } else {
-                return this.bus.importMethod('db/atm.card.check[0]')({
+                promise = this.bus.importMethod('db/atm.card.check[0]')({
                     cardId: params.cardId,
                     sourceAccount: params.sourceAccount,
                     sourceAccountType: params.sourceAccountType,
@@ -586,34 +584,35 @@ module.exports = function transferFlow({utError: {fetchErrors}}) {
                     .catch(error => {
                         params.abortAcquirer = error;
                         return this.bus.importMethod('transferFlow.push.execute')(params, $meta);
-                    })
-                    .then(result => Object.assign(params, {
-                        cardProductName: result.cardProductName,
-                        sourceAccount: result.sourceAccountNumber,
-                        sourceAccountName: result.sourceAccountName,
-                        destinationAccount: result.destinationAccountNumber,
-                        sourceCardProductId: result.sourceCardProductId,
-                        destinationAccountName: result.destinationAccountName,
-                        issuerId: result.issuerId,
-                        ledgerId: result.ledgerId,
-                        cardNumber: result.cardNumber,
-                        ordererId: result.ordererId
-                    }))
-                    .then(result => !params.transferIdAcquirer && this.bus.importMethod(`db/${params.channelType}.terminal.nextId`)({
-                        channelId: result.channelId
-                    }, {forward}))
-                    .then(result => {
-                        if (params.transferIdAcquirer) {
-                            return params;
-                        }
-                        if (!result || !result[0] || !result[0][0] || !result[0][0].tsn) {
-                            throw errors['transfer.nextId']();
-                        }
-                        params.transferIdAcquirer = result[0][0].tsn;
-                        return params;
-                    })
-                    .then(params => this.bus.importMethod('transferFlow.push.execute')(params, $meta));
+                    });
             }
+            return promise
+                .then(result => Object.assign(params, {
+                    cardProductName: result.cardProductName,
+                    sourceAccount: result.sourceAccountNumber,
+                    sourceAccountName: result.sourceAccountName,
+                    destinationAccount: result.destinationAccountNumber,
+                    sourceCardProductId: result.sourceCardProductId,
+                    destinationAccountName: result.destinationAccountName,
+                    issuerId: result.issuerId,
+                    ledgerId: result.ledgerId,
+                    cardNumber: result.cardNumber,
+                    ordererId: result.ordererId
+                }))
+                .then(result => !params.transferIdAcquirer && this.bus.importMethod(`db/${params.channelType}.terminal.nextId`)({
+                    channelId: result.channelId
+                }, {forward}))
+                .then(result => {
+                    if (params.transferIdAcquirer) {
+                        return params;
+                    }
+                    if (!result || !result[0] || !result[0][0] || !result[0][0].tsn) {
+                        throw errors['transfer.nextId']();
+                    }
+                    params.transferIdAcquirer = result[0][0].tsn;
+                    return params;
+                })
+                .then(params => this.bus.importMethod('transferFlow.push.execute')(params, $meta));
         },
         'transferFlow.transfer.get': function(msg, $meta) {
             return this.bus.importMethod('db/transfer.transfer.get')(msg, $meta)
