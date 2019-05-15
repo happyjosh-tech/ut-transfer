@@ -574,7 +574,7 @@ module.exports = function transferFlow({utError: {fetchErrors}}) {
 
                         return result;
                     });
-                }
+            }
             return promise
                 .catch(error => {
                     params.abortAcquirer = error;
