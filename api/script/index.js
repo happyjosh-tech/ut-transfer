@@ -51,25 +51,11 @@ const processReversal = (bus, log, $meta, transfer) => {
                     message: reversalError.message,
                     details: reversalError
                 }))
-                    .then(() => bus.importMethod(`db/transfer.push.confirmReversal${target}`)(transfer))
-                    .then(() => {
-                        transfer[`reversed${{Issuer: '', Ledger: 'Ledger'}[target]}`] = true;
-                        return transfer;
+                    .catch(error => {
+                        log.error && log.error(error);
+                        return Promise.reject(reversalError);
                     })
-                    .catch(reversalError => {
-                        let connected = !['port.notConnected', 'transfer.issuerNotConnected'].includes(reversalError && reversalError.type);
-                        return Promise.resolve(connected && bus.importMethod(`db/transfer.push.failReversal${target}`)({
-                            transferId: transfer.transferId,
-                            type: reversalError.type || (`${target.toLowerCase()}.error`),
-                            message: reversalError.message,
-                            details: reversalError
-                        }))
-                            .catch(error => {
-                                log.error && log.error(error);
-                                return Promise.reject(reversalError);
-                            })
-                            .then(() => Promise.reject(reversalError));
-                    });
+                    .then(() => Promise.reject(reversalError));
             });
     };
     return bus.importMethod('db/transfer.push.reverse')(transfer, $meta).then(() => {
