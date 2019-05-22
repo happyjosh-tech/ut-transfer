@@ -1,3 +1,12 @@
+## [6.28.7](https://github.com/softwaregroup-bg/ut-transfer/compare/v6.28.6...v6.28.7) (2019-05-22)
+
+
+### Bug Fixes
+
+* removed duplicated code ([4bf752e](https://github.com/softwaregroup-bg/ut-transfer/commit/4bf752e))
+
+
+
 ## [6.28.6](https://github.com/softwaregroup-bg/ut-transfer/compare/v6.28.5...v6.28.6) (2019-03-28)
 
 
