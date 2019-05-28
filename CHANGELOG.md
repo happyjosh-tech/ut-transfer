@@ -1,3 +1,20 @@
+# [6.29.0](https://github.com/softwaregroup-bg/ut-transfer/compare/v6.28.7...v6.29.0) (2019-05-28)
+
+
+### Bug Fixes
+
+* abortAquirer processing ([f3a0f86](https://github.com/softwaregroup-bg/ut-transfer/commit/f3a0f86))
+* error processing ([24d7b1c](https://github.com/softwaregroup-bg/ut-transfer/commit/24d7b1c))
+* error type check moved to SP ([467f26b](https://github.com/softwaregroup-bg/ut-transfer/commit/467f26b))
+* lint ([b9bb334](https://github.com/softwaregroup-bg/ut-transfer/commit/b9bb334))
+
+
+### Features
+
+* PS-112 ([4b682bf](https://github.com/softwaregroup-bg/ut-transfer/commit/4b682bf))
+
+
+
 ## [6.28.7](https://github.com/softwaregroup-bg/ut-transfer/compare/v6.28.6...v6.28.7) (2019-05-22)
 
 
