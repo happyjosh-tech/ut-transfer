@@ -1,3 +1,12 @@
+## [6.29.1](https://github.com/softwaregroup-bg/ut-transfer/compare/v6.29.0...v6.29.1) (2019-05-29)
+
+
+### Bug Fixes
+
+* card error processing ([baad072](https://github.com/softwaregroup-bg/ut-transfer/commit/baad072))
+
+
+
 # [6.29.0](https://github.com/softwaregroup-bg/ut-transfer/compare/v6.28.7...v6.29.0) (2019-05-28)
 
 
