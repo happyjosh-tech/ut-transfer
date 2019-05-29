@@ -552,30 +552,37 @@ module.exports = function transferFlow({utError: {fetchErrors}}) {
         },
         'transferFlow.card.execute': function(params, $meta) {
             let {forward} = $meta;
-            let promise;
             if (params.abortAcquirer) {
-                promise = this.bus.importMethod('db/atm.card.processError')({cardId: params.cardId, errorType: params.abortAcquirer.type}, $meta);
-            } else {
-                promise = this.bus.importMethod('db/atm.card.check[0]')({
+                return this.bus.importMethod('db/atm.card.processError')({
                     cardId: params.cardId,
-                    sourceAccount: params.sourceAccount,
-                    sourceAccountType: params.sourceAccountType,
-                    destinationType: params.destinationType,
-                    destinationTypeId: params.destinationTypeId,
-                    destinationAccount: params.destinationAccount,
-                    destinationAccountType: params.destinationAccountType,
-                    pinCheckValueNew: params.pinCheckValueNew,
-                    mode: params.mode
-                }, {forward})
-                    .then(result => {
-                        if (!result.issuerId) {
-                            throw errors['transfer.unknownIssuer']();
-                        }
-
-                        return result;
+                    errorType: params.abortAcquirer.type
+                }, $meta)
+                    .catch(e => {
+                        params.abortAcquirer = e;
+                        return params;
+                    })
+                    .then(() => {
+                        return this.bus.importMethod('transferFlow.push.execute')(params, $meta);
                     });
             }
-            return promise
+            return this.bus.importMethod('db/atm.card.check[0]')({
+                cardId: params.cardId,
+                sourceAccount: params.sourceAccount,
+                sourceAccountType: params.sourceAccountType,
+                destinationType: params.destinationType,
+                destinationTypeId: params.destinationTypeId,
+                destinationAccount: params.destinationAccount,
+                destinationAccountType: params.destinationAccountType,
+                pinCheckValueNew: params.pinCheckValueNew,
+                mode: params.mode
+            }, {forward})
+                .then(result => {
+                    if (!result.issuerId) {
+                        throw errors['transfer.unknownIssuer']();
+                    }
+
+                    return result;
+                })
                 .catch(error => {
                     params.abortAcquirer = error;
                     return this.bus.importMethod('transferFlow.push.execute')(params, $meta);
