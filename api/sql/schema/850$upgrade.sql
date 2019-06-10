@@ -22,3 +22,8 @@ IF NOT EXISTS(SELECT * FROM sys.columns WHERE NAME = N'state' AND Object_ID = OB
 BEGIN
   ALTER TABLE [transfer].[event] ADD [state] varchar(50)
 END
+
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE name='fk_transferTransfer_status') BEGIN
+    ALTER TABLE transfer.transfer ADD  CONSTRAINT [fk_transferTransfer_status] FOREIGN KEY([issuerTxState])
+    REFERENCES integration.[status](statusId);
+END
