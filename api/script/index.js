@@ -7,6 +7,17 @@ const DECLINED = {
 var errors = require('../../errors');
 var currency = require('../../currency');
 
+const internalAccountsMapping = {
+    bulkCredit: {
+        accountKey: 'sourceAccount',
+        splitKey: 'debit'
+    },
+    bulkDebit: {
+        accountKey: 'destinationAccount',
+        splitKey: 'credit'        
+    }
+}
+
 var processReversal = (bus, log, $meta) => params => {
     var transferId;
 
@@ -115,6 +126,16 @@ var ruleValidate = (bus, transfer) => {
                 transfer.split[key].state = '1'; // "Request was sent"
             }
         });
+       
+
+        if ((!transfer.destinationAccount || !transfer.sourceAccount) && transfer.transferType.toLowerCase().includes('bulk')) {
+            const realTimeSplit = Array.isArray(transfer.split) && transfer.split.find(s => {
+                return s.tag === '|realtime|';
+            })
+            if (realTimeSplit) {
+                transfer[internalAccountsMapping[transfer.transferType]['accountKey']] = realTimeSplit[internalAccountsMapping[transfer.transferType]['splitKey']];
+            }
+        }
 
         const transferDateTime = new Date().toISOString();  // at this point, "transferDateTime" arrives from the db/rule procedures in Database timezone, but we need to pass UTC time to transfer.push.create later
 
