@@ -92,8 +92,6 @@ USING
         ('transfer.transferReceipt.get', 'transfer.transferReceipt.get', '{}'),
         ('transfer.push.reject', 'transfer.push.reject', '{}'),
         ('transfer.push.cancel', 'transfer.push.cancel', '{}'),
-        ('transfer.push.addToQueueIssuer', 'transfer.push.addToQueueIssuer', '{}'),
-        ('transfer.push.expireIssuer', 'transfer.push.expireIssuer', '{}'),
         ('transfer.view.foreignAccounts', 'transfer.view.foreignAccounts', '{}')
     ) AS source (actionId, description, valueMap)
 JOIN

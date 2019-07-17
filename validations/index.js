@@ -32,5 +32,7 @@ module.exports = {
     'pending.reject': require('./pending/pending.reject'),
     'pending.cancel': require('./pending/pending.cancel'),
     'transfer.byAccountGet': require('./transfer/transfer.byAccountGet'),
-    'bank.list': require('./bank/list')
+    'bank.list': require('./bank/list'),
+    'transfer.createAndQueue': require('./transfer/createAndQueue'),
+    'transfer.queue': require('./transfer/queue')
 };

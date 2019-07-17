@@ -11,7 +11,5 @@
     "11": "Forward was requested",
     "12": "Forward was confirmed",
     "13": "Forward was denied",
-    "14": "Forward timed out or returned unknown error",
-    "15": "Transfer added to queue",
-    "16": "Transfer expired"
+    "14": "Forward timed out or returned unknown error"
 }
