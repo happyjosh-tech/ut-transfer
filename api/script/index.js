@@ -543,22 +543,23 @@ module.exports = function transferFlow({utError: {fetchErrors}}) {
 
             return getTransfer(params)
                 .then(transfer => {
+                    if (transfer.reversed && transfer.reversedLedger) {
+                        return transfer;
+                    }
                     if (!params.reverseAsync) {
-                        return processAny(this.bus, this.log, $meta)(transfer);
+                        return processAny(this.bus, this.log, $meta)(transfer).catch(error => {
+                            if (error.type === 'transfer.transferAlreadyReversed') {
+                                return transfer;
+                            }
+                            throw error;
+                        });
                     }
                     return this.bus.importMethod('db/transfer.push.reverseAcquirer')({
                         transferId: transfer.transferId,
                         type: params.reversalType || 'transfer.reverse',
                         message: params.reversalMessage || 'Reverse created',
                         details: params
-                    })
-                        .then(() => transfer);
-                })
-                .catch(error => {
-                    if (error.type === 'transfer.transferAlreadyReversed') {
-                        return transfer;
-                    }
-                    throw error;
+                    }).then(() => transfer);
                 });
         },
         'transferFlow.card.execute': function(params, $meta) {
@@ -632,7 +633,7 @@ module.exports = function transferFlow({utError: {fetchErrors}}) {
                     return this.bus.importMethod('transferFlow.push.execute')(params, $meta);
                 }
                 throw error;
-            });    
+            });
         },
         'transferFlow.transfer.get': function(msg, $meta) {
             return this.bus.importMethod('db/transfer.transfer.get')(msg, $meta)
