@@ -8,6 +8,7 @@ ALTER PROCEDURE [transfer].[transfer.get]
     @transferIdIssuer VARCHAR(50) = NULL,
     @issuerId VARCHAR(50) = NULL,
     @pan VARCHAR(32) = NULL,
+    @amount MONEY = NULL,
     @meta core.metaDataTT READONLY -- information for the user that makes the operation
 
 AS
@@ -121,6 +122,7 @@ WHERE
     (@acquirerCode IS NULL OR t.acquirerCode = @acquirerCode) AND
     (@retrievalReferenceNumber IS NULL OR t.retrievalReferenceNumber = @retrievalReferenceNumber) AND
     (@pan IS NULL OR e.[udfDetails].value('(/root/pan)[1]', 'VARCHAR(32)') = @pan) AND
+    (@amount IS NULL OR t.transferAmount = @amount) AND
     pullTransactionId IS NOT NULL
 ORDER BY
     t.transferDateTime DESC
@@ -209,7 +211,8 @@ BEGIN
         (@localDateTime IS NULL OR t.localDateTime LIKE '%' + @localDateTime) AND
         (@acquirerCode IS NULL OR t.acquirerCode = @acquirerCode) AND
         (@retrievalReferenceNumber IS NULL OR t.retrievalReferenceNumber = @retrievalReferenceNumber) AND
-        (@pan IS NULL OR e.[udfDetails].value('(/root/pan)[1]', 'VARCHAR(32)') = @pan)
+        (@pan IS NULL OR e.[udfDetails].value('(/root/pan)[1]', 'VARCHAR(32)') = @pan) AND
+        (@amount IS NULL OR t.transferAmount = @amount)
     ORDER BY
         t.transferDateTime DESC
 END

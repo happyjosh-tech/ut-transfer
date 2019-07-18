@@ -511,7 +511,7 @@ module.exports = function transferFlow({utError: {fetchErrors}}) {
             }
         },
         'transferFlow.push.reverse': function(params, $meta) {
-            var getTransfer = (params) => transferHandlers['transferFlow.transfer.get'].call(this, {
+            var getTransfer = (params) => transferHandlers['transferFlow.transfer.get'].call(this, params.transferQuery || {
                 transferId: params.transferId,
                 transferIdAcquirer: params.transferIdAcquirer,
                 retrievalReferenceNumber: params.retrievalReferenceNumber,
@@ -525,6 +525,8 @@ module.exports = function transferFlow({utError: {fetchErrors}}) {
                 .then(result => {
                     if (!result || !result.transferId) {
                         throw errors['transfer.notFound']();
+                    } else if (result.reversed && result.reversedLedger) {
+                        throw errors['transfer.transferAlreadyReversed']();
                     } else {
                         var transferInfo = Object.assign({
                             message: params.message,
@@ -541,13 +543,22 @@ module.exports = function transferFlow({utError: {fetchErrors}}) {
 
             return getTransfer(params)
                 .then(transfer => {
-                    return processAny(this.bus, this.log, $meta)(transfer)
-                        .catch(error => {
-                            if (error.type === 'transfer.transferAlreadyReversed') {
-                                return transfer;
-                            }
-                            throw error;
-                        });
+                    if (!params.reverseAsync) {
+                        return processAny(this.bus, this.log, $meta)(transfer);
+                    }
+                    return this.bus.importMethod('db/transfer.push.reverseAcquirer')({
+                        transferId: transfer.transferId,
+                        type: params.reversalType || 'transfer.reverse',
+                        message: params.reversalMessage || 'Reverse created',
+                        details: params
+                    })
+                        .then(() => transfer);
+                })
+                .catch(error => {
+                    if (error.type === 'transfer.transferAlreadyReversed') {
+                        return transfer;
+                    }
+                    throw error;
                 });
         },
         'transferFlow.card.execute': function(params, $meta) {
@@ -613,6 +624,15 @@ module.exports = function transferFlow({utError: {fetchErrors}}) {
                     return params;
                 })
                 .then(params => this.bus.importMethod('transferFlow.push.execute')(params, $meta));
+        },
+        'transferFlow.card.reverse': function(params, $meta) {
+            return this.bus.importMethod('transferFlow.push.reverse')(params, $meta).catch(error => {
+                if (error.type === 'transfer.notFound') {
+                    params.abortAcquirer = error;
+                    return this.bus.importMethod('transferFlow.push.execute')(params, $meta);
+                }
+                throw error;
+            });    
         },
         'transferFlow.transfer.get': function(msg, $meta) {
             return this.bus.importMethod('db/transfer.transfer.get')(msg, $meta)
