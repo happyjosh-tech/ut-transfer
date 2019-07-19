@@ -13,9 +13,9 @@
   },
   "devDependencies": {
     "tap": "^12.6.1",
-    "ut-tools": "^6.15.0",
     "ut-run": "^10.3.1",
-    "ut-test": "^5.19.6"
+    "ut-test": "^5.19.6",
+    "ut-tools": "^6.21.0"
   },
   "peerDependencies": {
     "immutable": "^3.8.1",
