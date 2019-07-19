@@ -1,3 +1,13 @@
+## [6.29.2](https://github.com/softwaregroup-bg/ut-transfer/compare/v6.29.1...v6.29.2) (2019-07-19)
+
+
+### Bug Fixes
+
+* insert card reversals into transfer table\nfeat: async reversals support ([2015506](https://github.com/softwaregroup-bg/ut-transfer/commit/2015506))
+* lint ([82b32ca](https://github.com/softwaregroup-bg/ut-transfer/commit/82b32ca))
+
+
+
 ## [6.29.1](https://github.com/softwaregroup-bg/ut-transfer/compare/v6.29.0...v6.29.1) (2019-05-29)
 
 
