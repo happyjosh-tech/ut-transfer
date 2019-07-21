@@ -1,3 +1,12 @@
+## [6.29.3](https://github.com/softwaregroup-bg/ut-transfer/compare/v6.29.2...v6.29.3) (2019-07-21)
+
+
+### Bug Fixes
+
+* repeat reversals originator info ([6620c09](https://github.com/softwaregroup-bg/ut-transfer/commit/6620c09))
+
+
+
 ## [6.29.2](https://github.com/softwaregroup-bg/ut-transfer/compare/v6.29.1...v6.29.2) (2019-07-19)
 
 
