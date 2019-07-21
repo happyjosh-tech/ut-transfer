@@ -525,8 +525,6 @@ module.exports = function transferFlow({utError: {fetchErrors}}) {
                 .then(result => {
                     if (!result || !result.transferId) {
                         throw errors['transfer.notFound']();
-                    } else if (result.reversed && result.reversedLedger) {
-                        throw errors['transfer.transferAlreadyReversed']();
                     } else {
                         var transferInfo = Object.assign({
                             message: params.message,
