@@ -538,7 +538,7 @@ module.exports = {
 
         return getTransfer(params)
             .then(transfer => {
-                if ((transfer.reversed && transfer.reversedLedger) || (transfer.transferIdAcquirer === 4 && params.reverseAsync)) {
+                if (transfer.reversed && transfer.reversedLedger) {
                     return transfer;
                 }
                 if (!params.reverseAsync) {
@@ -548,6 +548,9 @@ module.exports = {
                         }
                         throw error;
                     });
+                }
+                if ([4, 5].includes(transfer.acquirerTxState)) {
+                    return transfer;
                 }
                 return this.bus.importMethod('db/transfer.push.reverseAcquirer')({
                     transferId: transfer.transferId,
@@ -615,11 +618,17 @@ module.exports = {
     },
     'card.reverse': function(msg, $meta) {
         return this.bus.importMethod('transfer.push.reverse')(msg, $meta).catch(error => {
-            if (error.type === 'transfer.notFound') {
-                msg.abortAcquirer = error;
-                return this.bus.importMethod('transfer.push.execute')(msg, $meta);
+            if (error.type !== 'transfer.notFound') {
+                throw error;
             }
-            throw error;
+            msg.abortAcquirer = error;
+            return this.bus.importMethod('transfer.push.execute')(msg, $meta).catch(error => {
+                if (error.type === 'transfer.idAlreadyExists') {
+                    // This is possible if the transaction was processed between the two .push calls
+                    return this.bus.importMethod('transfer.push.reverse');
+                }
+                throw error;
+            });
         });
     },
     'transfer.get': function(msg, $meta) {
