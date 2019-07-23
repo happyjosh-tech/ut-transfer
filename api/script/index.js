@@ -524,9 +524,6 @@ module.exports = {
                 if (!result || !result.transferId) {
                     throw errors.notFound();
                 }
-                if (result && result.reversed && result.reversedLedger) {
-                    throw errors.transferAlreadyReversed();
-                }
                 var transferInfo = Object.assign({
                     message: params.message,
                     mti: '430',
@@ -541,8 +538,16 @@ module.exports = {
 
         return getTransfer(params)
             .then(transfer => {
+                if (transfer.reversed && transfer.reversedLedger) {
+                    return transfer;
+                }
                 if (!params.reverseAsync) {
-                    return processAny(this.bus, this.log, $meta)(transfer);
+                    return processAny(this.bus, this.log, $meta)(transfer).catch(error => {
+                        if (error.type === 'transfer.transferAlreadyReversed') {
+                            return transfer;
+                        }
+                        throw error;
+                    });
                 }
                 return this.bus.importMethod('db/transfer.push.reverseAcquirer')({
                     transferId: transfer.transferId,
