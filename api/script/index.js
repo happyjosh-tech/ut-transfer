@@ -538,7 +538,7 @@ module.exports = {
 
         return getTransfer(params)
             .then(transfer => {
-                if (transfer.reversed && transfer.reversedLedger) {
+                if ((transfer.reversed && transfer.reversedLedger) || (transfer.transferIdAcquirer === 4 && params.reverseAsync)) {
                     return transfer;
                 }
                 if (!params.reverseAsync) {
