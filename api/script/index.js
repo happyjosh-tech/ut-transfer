@@ -621,6 +621,7 @@ module.exports = {
             if (error.type !== 'transfer.notFound') {
                 throw error;
             }
+            // try insert the transaction as aborted
             msg.abortAcquirer = error;
             return this.bus.importMethod('transfer.push.execute')(msg, $meta).catch(error => {
                 if (error.type === 'transfer.idAlreadyExists') {
