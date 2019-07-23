@@ -509,7 +509,7 @@ module.exports = {
         }
     },
     'push.reverse': function(params, $meta) {
-        var getTransfer = (params) => this.config['transfer.transfer.get']({
+        var getTransfer = (params) => this.config['transfer.transfer.get'](params.transferQuery || {
             transferId: params.transferId,
             transferIdAcquirer: params.transferIdAcquirer,
             retrievalReferenceNumber: params.retrievalReferenceNumber,
@@ -523,22 +523,40 @@ module.exports = {
             .then(result => {
                 if (!result || !result.transferId) {
                     throw errors.notFound();
-                } else {
-                    var transferInfo = Object.assign({
-                        message: params.message,
-                        mti: '430',
-                        operation: (params.amount && params.amount.adjustment && params.amount.adjustment.cents)
-                            ? 'adjust'
-                            : 'reverse',
-                        transferType: 'push',
-                        amount: params.amount
-                    }, result, {originatorInfo: params});
-                    return transferInfo;
                 }
+                var transferInfo = Object.assign({
+                    message: params.message,
+                    mti: '430',
+                    operation: (params.amount && params.amount.adjustment && params.amount.adjustment.cents)
+                        ? 'adjust'
+                        : 'reverse',
+                    transferType: 'push',
+                    amount: params.amount
+                }, result, {originatorInfo: params});
+                return transferInfo;
             });
 
         return getTransfer(params)
-            .then(processAny(this.bus, this.log, $meta));
+            .then(transfer => {
+                if ((transfer.reversed && transfer.reversedLedger) || (transfer.transferIdAcquirer === 4 && params.reverseAsync)) {
+                    return transfer;
+                }
+                if (!params.reverseAsync) {
+                    return processAny(this.bus, this.log, $meta)(transfer).catch(error => {
+                        if (error.type === 'transfer.transferAlreadyReversed') {
+                            return transfer;
+                        }
+                        throw error;
+                    });
+                }
+                return this.bus.importMethod('db/transfer.push.reverseAcquirer')({
+                    transferId: transfer.transferId,
+                    type: params.reversalType || 'transfer.reverse',
+                    message: params.reversalMessage || 'Reverse created',
+                    details: params
+                })
+                    .then(() => transfer);
+            });
     },
     'card.execute': function(params, $meta) {
         if (params.abortAcquirer) {
@@ -594,6 +612,15 @@ module.exports = {
                 })
                 .then(params => this.bus.importMethod('transfer.push.execute')(params, $meta));
         }
+    },
+    'card.reverse': function(msg, $meta) {
+        return this.bus.importMethod('transfer.push.reverse')(msg, $meta).catch(error => {
+            if (error.type === 'transfer.notFound') {
+                msg.abortAcquirer = error;
+                return this.bus.importMethod('transfer.push.execute')(msg, $meta);
+            }
+            throw error;
+        });
     },
     'transfer.get': function(msg, $meta) {
         var $getTransferMeta = Object.assign($meta, { method: 'db/transfer.transfer.get' });

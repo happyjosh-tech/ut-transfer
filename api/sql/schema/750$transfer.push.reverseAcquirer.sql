@@ -12,7 +12,7 @@ SET
     acquirerTxState = 4
 WHERE
     transferId = @transferId AND
-    acquirerTxState = 1
+    ISNULL(acquirerTxState, 1) = 1
 
 DECLARE @COUNT INT = @@ROWCOUNT
 EXEC [transfer].[push.event]
