@@ -626,7 +626,7 @@ module.exports = {
             return this.bus.importMethod('transfer.push.execute')(msg, $meta).catch(error => {
                 if (error.type === 'transfer.idAlreadyExists') {
                     // This is possible if the transaction was processed between the two .push calls
-                    return this.bus.importMethod('transfer.push.reverse');
+                    return this.bus.importMethod('transfer.push.reverse')(msg, $meta);
                 }
                 throw error;
             });
