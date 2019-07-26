@@ -552,6 +552,9 @@ module.exports = function transferFlow({utError: {fetchErrors}}) {
                             throw error;
                         });
                     }
+                    if ([4, 5].includes(transfer.acquirerTxState)) {
+                        return transfer;
+                    }
                     return this.bus.importMethod('db/transfer.push.reverseAcquirer')({
                         transferId: transfer.transferId,
                         type: params.reversalType || 'transfer.reverse',
@@ -626,11 +629,18 @@ module.exports = function transferFlow({utError: {fetchErrors}}) {
         },
         'transferFlow.card.reverse': function(params, $meta) {
             return this.bus.importMethod('transferFlow.push.reverse')(params, $meta).catch(error => {
-                if (error.type === 'transfer.notFound') {
-                    params.abortAcquirer = error;
-                    return this.bus.importMethod('transferFlow.push.execute')(params, $meta);
+                if (error.type !== 'transfer.notFound') {
+                    throw error;
                 }
-                throw error;
+                params.abortAcquirer = error;
+                return this.bus.importMethod('transferFlow.push.execute')(params, $meta).catch(error => {
+                    if (error.type !== 'transfer.idAlreadyExists') {
+                        throw error;
+                    }
+                    // This is possible if the transaction was processed between push.reverse and push.execute
+                    // Retry the reversal before passing back controll to the caller.
+                    return this.bus.importMethod('transferFlow.push.reverse')(params, $meta);
+                });
             });
         },
         'transferFlow.transfer.get': function(msg, $meta) {
