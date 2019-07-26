@@ -1,3 +1,12 @@
+## [6.29.4](https://github.com/softwaregroup-bg/ut-transfer/compare/v6.29.3...v6.29.4) (2019-07-26)
+
+
+### Bug Fixes
+
+* race condition & ack aborted/reversed txns ([52bb5b8](https://github.com/softwaregroup-bg/ut-transfer/commit/52bb5b8))
+
+
+
 ## [6.29.3](https://github.com/softwaregroup-bg/ut-transfer/compare/v6.29.2...v6.29.3) (2019-07-21)
 
 
