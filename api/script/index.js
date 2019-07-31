@@ -128,6 +128,7 @@ var ruleValidate = (bus, transfer) => {
             transfer.taxWTH = assignmentCalc(decision, 'wth');
             transfer.taxOther = assignmentCalc(decision, 'otherTax');
             transfer.commission = assignmentCalc(decision, 'commission');
+            transfer.amount.transferFee = currency.amount(transfer.transferCurrency, transfer.transferFee);
             transfer.amount.acquirerFee = currency.amount(transfer.transferCurrency, transfer.acquirerFee);
             transfer.amount.issuerFee = currency.amount(transfer.transferCurrency, transfer.issuerFee);
             transfer.amount.taxVAT = currency.amount(transfer.transferCurrency, transfer.taxVAT);
