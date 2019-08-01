@@ -635,6 +635,56 @@ module.exports = {
     },
     'pendingUserTransfers.fetch': function(msg, $meta) {
         return this.bus.importMethod('db/transfer.pendingUserTransfers.fetch')(msg, $meta);
+    },
+    'transfer.createAndQueue': async function(msg, $meta) {
+        const { amqp } = this.bus.config;
+        if (!amqp || !amqp.newTransfer) {
+            throw errors.missingConfig('Missing new transfer amqp configuration')();
+        }
+        try {
+            const { exchange, routingKey, options } = amqp.newTransfer;
+            const result = await this.bus.importMethod('db/transfer.push.create')(msg, $meta);
+            const transferId = result[0][0].transferId;
+            await this.bus.importMethod('transfer.push.requestIssuer')({transferId}, $meta);
+            await this.bus.importMethod('amqp.exchange.push')({
+                exchange,
+                routingKey,
+                payloads: [{
+                    transferId
+                }],
+                options
+            }, $meta);
+            return {
+                transferId
+            };
+        } catch (err) {
+            return err;
+        }
+    },
+    'transfer.queue': async function(msg, $meta) {
+        const { transferId } = msg;
+        const { amqp } = this.bus.config;
+        if (!amqp || !amqp.pendingTransfer) {
+            throw errors.missingConfig('Missing pending transfer amqp configuration')();
+        }
+        try {
+            const { exchange, routingKey, options } = amqp.pendingTransfer;
+            await this.bus.importMethod('transfer.pending.confirm')(msg, $meta);
+            await this.bus.importMethod('transfer.push.requestIssuer')({transferId}, $meta);
+            await this.bus.importMethod('amqp.exchange.push')({
+                exchange,
+                routingKey,
+                payloads: [{
+                    transferId
+                }],
+                options
+            }, $meta);
+            return {
+                transferId
+            };
+        } catch (err) {
+            return err;
+        }
     }
 };
 // todo handle timeout from destination port
