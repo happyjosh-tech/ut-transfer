@@ -107,7 +107,11 @@ var ruleValidate = (bus, transfer) => {
         amount: transfer.amount && transfer.amount.transfer && transfer.amount.transfer.amount,
         currency: transfer.amount && transfer.amount.transfer && transfer.amount.transfer.currency,
         isSourceAmount: false,
-        channelType: transfer.channelType || null
+        channelType: transfer.channelType || null,
+        sourceAccountRiskProfileId: transfer.sourceRiskProfile || null,
+        sourceAccountCategoryId: transfer.sourceAccountCategory || null,
+        destinationAccountRiskProfileId: transfer.destinationRiskProfile || null,
+        destinationAccountCategoryId: transfer.destinationAccountCategory || null
     }).then(decision => {
         transfer.transferAmount = transfer.amount && transfer.amount.transfer && transfer.amount.transfer.amount;
         transfer.transferCurrency = transfer.amount && transfer.amount.transfer && transfer.amount.transfer.currency;
