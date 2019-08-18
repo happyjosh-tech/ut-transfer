@@ -10,7 +10,7 @@ SET NOCOUNT ON
 UPDATE
     [transfer].[transfer]
 SET
-    [transferIdAcquirer] = @transferIdAcquirer,
+    [transferIdAcquirer] = ISNULL(@transferIdAcquirer, transferIdAcquirer),
     acquirerTxState = 2
 WHERE
     transferId = @transferId AND
