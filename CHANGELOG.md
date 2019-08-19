@@ -1,3 +1,12 @@
+## [6.29.5](https://github.com/softwaregroup-bg/ut-transfer/compare/v6.29.4...v6.29.5) (2019-08-19)
+
+
+### Bug Fixes
+
+* do not erase transferIdAcquirer ([a67aae4](https://github.com/softwaregroup-bg/ut-transfer/commit/a67aae4))
+
+
+
 ## [6.29.4](https://github.com/softwaregroup-bg/ut-transfer/compare/v6.29.3...v6.29.4) (2019-07-26)
 
 
