@@ -620,6 +620,7 @@ module.exports = {
             cardDetails
         ]) => {
             const transfer = Object.assign({}, acquirerId, cardDetails, params);
+            transfer.abortAcquirer = params.abortAcquirer || cardDetails.abortAcquirer || acquirerId.abortAcquirer;
             return this.bus.importMethod('transfer.push.execute')(transfer, $meta);
         });
     },
