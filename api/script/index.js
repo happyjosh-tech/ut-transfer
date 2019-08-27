@@ -637,7 +637,7 @@ module.exports = function transferFlow({utError: {fetchErrors}}) {
                 cardDetails,
                 processAcquirerError
             ]) => {
-                const transfer = Object.assign({}, acquirerId, cardDetails, params);
+                const transfer = Object.assign({}, acquirerId, params, cardDetails);
                 const selectFirstError = errors => errors.find(e => e);
                 transfer.abortAcquirer = selectFirstError([
                     processAcquirerError.abortAcquirer,
