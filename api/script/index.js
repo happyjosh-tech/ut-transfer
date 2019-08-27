@@ -619,7 +619,7 @@ module.exports = {
             acquirerId,
             cardDetails
         ]) => {
-            const transfer = Object.assign({}, acquirerId, cardDetails, params);
+            const transfer = Object.assign({}, acquirerId, params, cardDetails);
             transfer.abortAcquirer = params.abortAcquirer || cardDetails.abortAcquirer || acquirerId.abortAcquirer;
             return this.bus.importMethod('transfer.push.execute')(transfer, $meta);
         });
