@@ -562,9 +562,23 @@ module.exports = {
             });
     },
     'card.execute': function(params, $meta) {
-        if (params.abortAcquirer) {
-            return this.bus.importMethod('transfer.push.execute')(params, $meta);
-        } else {
+        const acquirerId = Promise.resolve().then(() => {
+            if (params.transferIdAcquirer) {
+                return {transferIdAcquirer: params.transferIdAcquirer};
+            }
+            return this.bus.importMethod(`db/${params.channelType}.terminal.nextId`)({
+                channelId: params.channelId
+            }).then(result => {
+                if (!result || !result[0] || !result[0][0] || !result[0][0].tsn) {
+                    throw errors.nextId();
+                }
+                return {transferIdAcquirer: result[0][0].tsn};
+            });
+        });
+        const cardDetails = Promise.resolve().then(() => {
+            if (params.abortAcquirer) {
+                return {};
+            }
             return this.bus.importMethod('db/atm.card.check[0]')({
                 cardId: params.cardId,
                 sourceAccount: params.sourceAccount,
@@ -576,19 +590,11 @@ module.exports = {
                 pinOffset: params.pinOffset,
                 pinOffsetNew: params.pinOffsetNew,
                 mode: params.mode
-            })
-                .then(result => {
-                    if (!result.issuerId) {
-                        throw errors.unknownIssuer();
-                    }
-
-                    return result;
-                })
-                .catch(error => {
-                    params.abortAcquirer = error;
-                    return this.bus.importMethod('transfer.push.execute')(params, $meta);
-                })
-                .then(result => Object.assign(params, {
+            }).then(result => {
+                if (!result.issuerId) {
+                    throw errors.unknownIssuer();
+                }
+                return {
                     cardProductName: result.cardProductName,
                     sourceAccount: result.sourceAccountNumber,
                     sourceAccountName: result.sourceAccountName,
@@ -599,22 +605,24 @@ module.exports = {
                     ledgerId: result.ledgerId,
                     cardNumber: result.cardNumber,
                     ordererId: result.ordererId
-                }))
-                .then(result => !params.transferIdAcquirer && this.bus.importMethod(`db/${params.channelType}.terminal.nextId`)({
-                    channelId: result.channelId
-                }))
-                .then(result => {
-                    if (params.transferIdAcquirer) {
-                        return params;
-                    }
-                    if (!result || !result[0] || !result[0][0] || !result[0][0].tsn) {
-                        throw errors.nextId();
-                    }
-                    params.transferIdAcquirer = result[0][0].tsn;
-                    return params;
-                })
-                .then(params => this.bus.importMethod('transfer.push.execute')(params, $meta));
-        }
+                };
+            });
+        });
+        const catchError = promise => promise.catch(error => {
+            this.log && this.log.error && this.log.error(error);
+            return {abortAcquirer: error};
+        });
+        return Promise.all([
+            catchError(acquirerId),
+            catchError(cardDetails)
+        ]).then(([
+            acquirerId,
+            cardDetails
+        ]) => {
+            const transfer = Object.assign({}, acquirerId, params, cardDetails);
+            transfer.abortAcquirer = params.abortAcquirer || cardDetails.abortAcquirer || acquirerId.abortAcquirer;
+            return this.bus.importMethod('transfer.push.execute')(transfer, $meta);
+        });
     },
     'card.reverse': function(msg, $meta) {
         return this.bus.importMethod('transfer.push.reverse')(msg, $meta).catch(error => {
