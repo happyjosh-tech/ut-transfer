@@ -1,3 +1,13 @@
+## [6.29.6](https://github.com/softwaregroup-bg/ut-transfer/compare/v6.29.5...v6.29.6) (2019-08-28)
+
+
+### Bug Fixes
+
+* don't replace card params with old values ([e9c192d](https://github.com/softwaregroup-bg/ut-transfer/commit/e9c192d))
+* generate acquirerId in any case ([af4a12b](https://github.com/softwaregroup-bg/ut-transfer/commit/af4a12b))
+
+
+
 ## [6.29.5](https://github.com/softwaregroup-bg/ut-transfer/compare/v6.29.4...v6.29.5) (2019-08-19)
 
 
