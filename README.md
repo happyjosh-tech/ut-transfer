@@ -367,12 +367,11 @@ result - ???
 
 Performs transaction reversal processing
 
-params
+params (object)
 
-- _params_ (object)
-  - _interval_ (integer) - _interval_ from _parms_
-  - _issuerPort_ (string) - ???
-  - _length_ (integer) - _length_ from _parms_
+- _interval_ (integer) - _interval_ from _parms_
+- _issuerPort_ (string) - ???
+- _length_ (integer) - ???
 
 result - _true_ or _false_ depending on existence of previous not completed
  execution of _transferFlow.idle.execute_, or presence of transactions pending
@@ -676,9 +675,9 @@ result (object)
 
 (value, exp)
 
-params
-
 ???
+
+params
 
 - _value_ (integer) - amount
 - _exp_ (integer) - ISO 4217 currency exponent
