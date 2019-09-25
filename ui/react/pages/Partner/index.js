@@ -7,7 +7,6 @@ import ResizibleContainer from 'ut-front-react/components/ResiziblePageLayout/Co
 import resizibleTypes from 'ut-front-react/components/ResiziblePageLayout/resizibleTypes';
 import localStorageTypes from 'ut-front-react/components/ResiziblePageLayout/localStorageTypes';
 import Text from 'ut-front-react/components/Text';
-import mainStyle from 'ut-front-react/assets/index.css';
 
 import Grid from './../../containers/Partners/Grid';
 import {ToolboxFilters, ToolboxButtons} from './../../containers/Partners/GridToolbox';
@@ -27,27 +26,25 @@ class Partner extends Component {
     getResizibleCols() {
         let {config} = this.props;
         let filterByCustomSearch = config.getIn(['filters', 'filterByCustomSearch']);
-        let content = (
-            <div className={mainStyle.contentTableWrap} style={{minWidth: '925px'}}>
-                <div className={mainStyle.actionBarWrap}>
-                    <ToolboxFilters>
-                        <div className={style.filterWrap}>
-                            <div className={style.filterCustomSearchSeparated}>
-                                <FilterByCustomSearch allowedFields={filterByCustomSearch.get('fields')} defaultField={filterByCustomSearch.get('defaultField')} />
-                            </div>
-                            <ClearFilter />
-                        </div>
-                    </ToolboxFilters>
-                    <ToolboxButtons>
-                        <div className={style.buttonWrap}>
-                            <GridToolboxButtons />
-                        </div>
-                    </ToolboxButtons>
+        let content = [
+            <ToolboxFilters>
+                <div className={style.filterWrap}>
+                    <div className={style.filterCustomSearchSeparated}>
+                        <FilterByCustomSearch
+                            allowedFields={filterByCustomSearch.get('fields')}
+                            defaultField={filterByCustomSearch.get('defaultField')} />
+                    </div>
+                    <ClearFilter />
                 </div>
-                <Grid />
-                <Pagination />
-            </div>
-        );
+            </ToolboxFilters>,
+            <ToolboxButtons>
+                <div className={style.buttonWrap}>
+                    <GridToolboxButtons />
+                </div>
+            </ToolboxButtons>,
+            <Grid />,
+            <Pagination />
+        ];
 
         let resizibleContainerCols = [
             {type: resizibleTypes.CONTENT, id: 'roleContent', normalWidth: window.window.innerWidth, minWidth: 250, child: content}
@@ -70,9 +67,10 @@ class Partner extends Component {
             <div>
                 <AddTab pathname={getLink('ut-transfer:partners')} title='Transfer Partners and Card Issuers' />
                 <Header text={<Text>Transfer Partners and Card Issuers</Text>} buttons={buttons} />
-                <div>
-                    <ResizibleContainer cols={resizibleContainerCols} localStorageType={localStorageTypes.TWO_COLS} />
-                </div>
+                <ResizibleContainer
+                    cssStandard
+                    cols={resizibleContainerCols}
+                    localStorageType={localStorageTypes.TWO_COLS} />
                 <PartnerCreate />
                 <Details />
             </div>

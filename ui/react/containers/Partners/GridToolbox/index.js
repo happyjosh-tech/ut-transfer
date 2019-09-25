@@ -9,7 +9,8 @@ export const ToolboxFilters = connect(
         return {
             opened: hasCheckedItems ? state.transferPartnerToolbox.getIn(['filters', 'opened']) : true,
             title: hasCheckedItems ? 'Show Buttons' : 'Filter By',
-            isTitleLink: hasCheckedItems
+            isTitleLink: hasCheckedItems,
+            cssStandard: true
         };
     },
     {toggle}
@@ -22,7 +23,8 @@ export const ToolboxButtons = connect(
         return {
             opened: hasCheckedItems ? state.transferPartnerToolbox.getIn(['buttons', 'opened']) : false,
             title: 'Show Filters',
-            isTitleLink: hasCheckedItems
+            isTitleLink: hasCheckedItems,
+            cssStandard: true
         };
     },
     {toggle}

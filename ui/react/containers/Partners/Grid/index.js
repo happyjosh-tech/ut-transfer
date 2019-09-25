@@ -10,9 +10,6 @@ import {SimpleGrid} from 'ut-front-react/components/SimpleGrid';
 import DateFormatter from 'ut-front-react/containers/DateFormatter';
 import Text from 'ut-front-react/components/Text';
 
-import mainStyle from 'ut-front-react/assets/index.css';
-import style from './style.css';
-
 class Grid extends Component {
     constructor(props) {
         super(props);
@@ -75,25 +72,21 @@ class Grid extends Component {
     render() {
         let { partners, config } = this.props;
         return (
-            <div>
-                <div className={mainStyle.tableWrap} id={style.usersGrid}>
-                    <SimpleGrid
-                        multiSelect
-                        globalMenu
-                        emptyRowsMsg={<Text>No result</Text>}
-                        handleCheckboxSelect={this.handleCheckboxSelect}
-                        handleHeaderCheckboxSelect={this.handleCheckboxSelectAll}
-                        fields={this.props.fields.filter((f) => (config.getIn(['grid', 'fields']).indexOf(f.name) >= 0))}
-                        toggleColumnVisibility={this.props.toggleVisibleColumn}
-                        orderBy={config.getIn(['grid', 'orderByFields']).toJS()}
-                        handleOrder={this.handleOrder}
-                        handleCellClick={this.getDetails}
-                        data={partners.toJS()}
-                        rowsChecked={this.props.checkedRows.toList().toJS()}
-                        transformCellValue={this.handleTransformCellValue}
-                    />
-                </div>
-            </div>
+            <SimpleGrid
+                cssStandard
+                multiSelect
+                globalMenu
+                emptyRowsMsg={<Text>No result</Text>}
+                handleCheckboxSelect={this.handleCheckboxSelect}
+                handleHeaderCheckboxSelect={this.handleCheckboxSelectAll}
+                fields={this.props.fields.filter((f) => (config.getIn(['grid', 'fields']).indexOf(f.name) >= 0))}
+                toggleColumnVisibility={this.props.toggleVisibleColumn}
+                orderBy={config.getIn(['grid', 'orderByFields']).toJS()}
+                handleOrder={this.handleOrder}
+                handleCellClick={this.getDetails}
+                data={partners.toJS()}
+                rowsChecked={this.props.checkedRows.toList().toJS()}
+                transformCellValue={this.handleTransformCellValue} />
         );
     }
 }
