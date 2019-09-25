@@ -13,25 +13,25 @@
   },
   "devDependencies": {
     "tap": "^12.6.1",
-    "ut-run": "^10.3.1",
-    "ut-test": "^5.19.6",
-    "ut-tools": "^6.21.0"
+    "ut-run": "^10.10.4",
+    "ut-test": "^5.20.2",
+    "ut-tools": "^6.25.2"
   },
   "peerDependencies": {
-    "immutable": "^3.8.1",
+    "immutable": "^4.0.0-rc.12",
     "react-hot-loader": "^4.6.3",
     "react-redux": "^5.0.5",
     "react-router": "^4.3.1",
     "react": "^15.6.1",
     "redux": "^3.7.2",
-    "ut-bus": "^7.2.1",
+    "ut-bus": "^7.5.1",
     "ut-dispatch-db": "^1.1.1",
-    "ut-front-react": "^11.0.2",
+    "ut-front-react": "^11.0.8",
     "ut-front": "^9.1.1",
     "ut-port-script": "^7.0.1",
-    "ut-rule": "^9.20.3",
-    "ut-run": "^10.3.1",
-    "ut-user": "^7.37.10"
+    "ut-rule": "^9.20.4",
+    "ut-run": "^10.10.4",
+    "ut-user": "^7.38.2"
   },
   "description": "UT Transfer",
   "scripts": {
