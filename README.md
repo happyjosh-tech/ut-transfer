@@ -166,7 +166,6 @@ params (object)
 - _udfAcquirer_ (object) - user defined fields ???
   - _arqcFail_ (bool) - flag if the Authorization Request Cryptogram
    verification has failed
-  - _availableCvvList_ (???) - ??? :undefined
   - _cardFlow_ (string) - ??? :"own"
   - _emvData_ (object) - if the current EMV tag is NOT a DOL tag, each
    _key: value_ pair contains the following:
@@ -303,7 +302,6 @@ result (object)
  structure is the same for all transaction types ???
   - _arqcFail_ (bool) - flag if the Authorization Request Cryptogram
    verification has failed
-  - _availableCvvList_ (???) - ??? :undefined
   - _cardFlow_ (string) - ??? :"own"
   - _emvData_ (object) - if the current EMV tag is NOT a DOL tag, each
    _key: value_ pair contains the following:
@@ -438,7 +436,6 @@ params (object)
 - _udfAcquirer_ (object) - user defined fields ???
   - _arqcFail_ (bool) - flag if the Authorization Request Cryptogram
    verification has failed
-  - _availableCvvList_ (???) - ??? :undefined
   - _cardFlow_ (string) - ??? :"own"
   - _emvData_ (object) - if the current EMV tag is NOT a DOL tag, each
    _key: value_ pair contains the following:
