@@ -81,11 +81,9 @@ The functionality is split in the following sub-modules:
 - _transferFlow_
 - _currency_
 
-  **NOTE: each module includes _PUBLIC_ and _PRIVATE_ methods, as noted below**
-
 ## transferFlow API
 
-### start - _PUBLIC_
+### start
 
 ()
 
@@ -95,7 +93,7 @@ Initializes the global variables of the sub-module:
  _ut-transfer_
 - _idlePorts_ (set) - ???
 
-### transferFlow.rule.validate - _PUBLIC_
+### transferFlow.rule.validate
 
 (params)
 
@@ -107,7 +105,7 @@ params
 
 result - ???
 
-### transferFlow.push.execute - _PUBLIC_
+### transferFlow.push.execute
 
 (params)
 
@@ -335,7 +333,7 @@ result (object)
   - _track2EquivalentData_ (string) - encrypted track 2 equivalent data EMV tag
 - _udfIssuer_ (object) - ???
 
-### transferFlow.pending.pullExecute - _PUBLIC_
+### transferFlow.pending.pullExecute
 
 (params)
 
@@ -347,7 +345,7 @@ params
 
 result - ???
 
-### transferFlow.pending.pushExecute - _PUBLIC_
+### transferFlow.pending.pushExecute
 
 (params)
 
@@ -359,7 +357,7 @@ params
 
 result - ???
 
-### transferFlow.idle.execute - _PUBLIC_
+### transferFlow.idle.execute
 
 (params)
 
@@ -375,7 +373,7 @@ result - _true_ or _false_ depending on existence of previous not completed
  execution of _transferFlow.idle.execute_, or presence of transactions pending
  reversal in DB
 
-### transferFlow.push.reverse - _PUBLIC_
+### transferFlow.push.reverse
 
 (params)
 
@@ -387,7 +385,7 @@ params
 
 result - ???
 
-### transferFlow.card.execute - _PUBLIC_
+### transferFlow.card.execute
 
 (params)
 
@@ -470,7 +468,7 @@ params (object)
 
 result - result from _transferFlow.push.execute_ method
 
-### transferFlow.transfer.get - _PUBLIC_
+### transferFlow.transfer.get
 
 (msg, $meta)
 
@@ -483,7 +481,7 @@ params
 
 result - ???
 
-### transferFlow.pendingUserTransfers.fetch - _PUBLIC_
+### transferFlow.pendingUserTransfers.fetch
 
 (msg, $meta)
 
@@ -493,95 +491,24 @@ params
 
 - _params_ (???) - ???
 - _$meta_ (object) - meta object as defined in ???
-
-result - ???
-
-### processReversal - _PRIVATE_
-
-(bus, log, $meta, transfer)
-
-???
-
-params
-
-- _bus_ (???) - ???
-- _log_ (???) - ???
-- _$meta_ (object) - meta object as defined in ???
-- _transfer_ (???) - ???
-
-result - ???
-
-### processAdjustment - _PRIVATE_
-
-(bus, log, $meta, transfer)
-
-???
-
-params
-
-- _bus_ (???) - ???
-- _log_ (???) - ???
-- _$meta_ (object) - meta object as defined in ???
-- _transfer_ (???) - ???
-
-result - ???
-
-### processAny - _PRIVATE_
-
-(bus, log, $meta)(transfer)
-
-???
-
-params
-
-- _bus_ (???) - ???
-- _log_ (???) - ???
-- _$meta_ (object) - meta object as defined in ???
-- _transfer_ (???) - ???
-
-result - ???
-
-### ruleValidate - _PRIVATE_
-
-(bus, transfer)
-
-???
-
-params
-
-- _bus_ (???) - ???
-- _transfer_ (???) - ???
-
-result - ???
-
-### hashTransferPendingSecurityCode - _PRIVATE_
-
-(bus, transfer)
-
-???
-
-params
-
-- _bus_ (???) - ???
-- _transfer_ (???) - ???
 
 result - ???
 
 ## currency API
 
-### _numeric_ - _PUBLIC_
+### _numeric_
 
 Sends request to _numeric_ _PRIVATE_ function
 
-### _alphabetic_ - _PUBLIC_
+### _alphabetic_
 
 Sends request to _alphabetic_ _PRIVATE_ function
 
-### _scale_ - _PUBLIC_
+### _scale_
 
 Sends request to _getScale_ _PRIVATE_ function
 
-### _cents_ - _PUBLIC_
+### _cents_
 
 (currency, cents, sign)
 
@@ -595,7 +522,7 @@ params
 
 result - result from _amountObject_ method
 
-### _amount_ - _PUBLIC_
+### _amount_
 
 (currency, amount, sign)
 
@@ -608,94 +535,6 @@ params
 - _sign_ (integer) - amount sign; __Valid values__: _1_, _-1_; __Default__: _1_
 
 result - result from _amountObject_ method
-
-### _alphabetic_ - _PRIVATE_
-
-(code)
-
-Checks if _code_ is valid ISO 4217 alphabetic currency code
-
-params
-
-- _code_ (string) - ISO 4217 currency code
-
-result - depending on _code_:
-
-- (string) - _code_ if _code_ is a valid ISO 4217 alphabetic currency code
-
-OR
-
-- (string) - ISO 4217 alphabetic currency code otherwise; **NOTE: presumably
- _code_ is a valid numeric currency code in that case**
-
-### _numeric_ - _PRIVATE_
-
-(code)
-
-Checks if _code_ is valid ISO 4217 numeric currency code
-
-params
-
-- _code_ (string) - ISO 4217 currency code
-
-result - depending on _code_:
-
-- (string) - _code_ if _code_ is a valid ISO 4217 numeric currency code
-
-OR
-
-- (string) - ISO 4217 numeric currency code otherwise; **NOTE: presumably
- _code_ is a valid alphabetic currency code in that case**
-
-### _amountObject_ - _PRIVATE_
-
-(cents, scale, sign, currency, string)
-
-Creates amount object for transaction processing
-
-params
-
-- _cents_ (string) - amount in cents
-- _scale_ (integer) - ISO 4217 currency exponent
-- _sign_ (integer) - amount sign; __Valid values__: _1_, _-1_; __Default__: _1_
-- _currency_ (string) - ISO 4217 currency code
-- _string_ (string) - amount; **NOTE: used only if error is encountered**
-
-result (object)
-
-- _amount_ (string) - amount
-- _cents_ (integer) - amount in cents with _sign_ applied
-- _currency_ (string) - ISO 4217 alphabetic currency code
-- _scale_ (integer) - currency exponent
-
-### _roundCents_ - _PRIVATE_
-
-(value, exp)
-
-???
-
-params
-
-- _value_ (integer) - amount
-- _exp_ (integer) - ISO 4217 currency exponent
-
-result
-
-- (integer) - ???
-
-### _getScale_ - _PRIVATE_
-
-(code)
-
-Returns ISO 4217 currency exponent
-
-params
-
-- _code_ (string) - ISO 4217 alphabetic or numeric currency code
-
-result
-
-- (integer) - ISO 4217 currency exponent of the provided currency
 
 ## Currency dictionaries
 
