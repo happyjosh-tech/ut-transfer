@@ -1,3 +1,7 @@
+## [6.29.7](https://github.com/softwaregroup-bg/ut-transfer/compare/v6.29.6...v6.29.7) (2019-09-30)
+
+
+
 ## [6.29.6](https://github.com/softwaregroup-bg/ut-transfer/compare/v6.29.5...v6.29.6) (2019-08-28)
 
 
