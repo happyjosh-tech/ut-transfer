@@ -1,3 +1,18 @@
+# [6.30.0](https://github.com/softwaregroup-bg/ut-transfer/compare/v6.29.7...v6.30.0) (2019-10-01)
+
+
+### Bug Fixes
+
+* documentation ([8d1bcfb](https://github.com/softwaregroup-bg/ut-transfer/commit/8d1bcfb))
+* PS-160 ([64f2bbb](https://github.com/softwaregroup-bg/ut-transfer/commit/64f2bbb))
+
+
+### Features
+
+* documentation ([f89f951](https://github.com/softwaregroup-bg/ut-transfer/commit/f89f951))
+
+
+
 ## [6.29.7](https://github.com/softwaregroup-bg/ut-transfer/compare/v6.29.6...v6.29.7) (2019-09-30)
 
 
