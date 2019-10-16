@@ -15,7 +15,6 @@ module.exports = () => function utTransfer() {
         ],
         eft: () => [
             require('./errors'),
-            require('./currency'),
             require('./test/mock/t24'),
             require('./ports/script'),
             require('./api/script')

@@ -9,7 +9,8 @@
     ]
   },
   "dependencies": {
-    "joi": "13.7.0"
+    "joi": "13.7.0",
+    "ut-function.currency": "^1.0.0"
   },
   "devDependencies": {
     "tap": "^12.6.1",

@@ -1,6 +1,6 @@
-const getAmount = require('../../currency')().amount;
+var currencyFn = require('ut-function.currency');
 
-module.exports = function t24Mock({config}) {
+module.exports = function t24Mock({config, utError: {fetchErrors}}) {
     return config && class t24Mock extends require('ut-port-script')(...arguments) {
         get defaults() {
             return {
@@ -8,6 +8,8 @@ module.exports = function t24Mock({config}) {
             };
         }
         handlers() {
+            var getAmount = currencyFn({errors: fetchErrors('currency')}).amount;
+
             return {
                 'transfer.push.execute': function(msg) {
                     switch (msg.sourceAccount) {

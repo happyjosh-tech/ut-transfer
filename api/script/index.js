@@ -24,8 +24,9 @@ const DECLINED = {
     ],
     merchant: ['merchant.genericDecline']
 };
-var currency = require('../../currency')();
+var currencyFn = require('ut-function.currency');
 var errors;
+var currency;
 
 const processReversal = (bus, log, $meta, transfer) => {
     let {forward} = $meta;
@@ -191,6 +192,8 @@ module.exports = function transferFlow({utError: {fetchErrors}}) {
         start: function() {
             this.idlePorts = new Set();
             errors = fetchErrors('transfer');
+            var currencyErrors = fetchErrors('currency');
+            currency = currencyFn({errors: currencyErrors});
         },
         'transferFlow.rule.validate': function(params, {forward}) {
             return ruleValidate(this.bus, params, forward);

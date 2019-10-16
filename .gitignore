@@ -1,5 +1,6 @@
 /.project
 *sublime*
 /node_modules/**/*
+/.history/**/*
 npm-debug.*
 package-lock.json
