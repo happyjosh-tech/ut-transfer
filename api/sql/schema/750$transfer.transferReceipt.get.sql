@@ -29,8 +29,11 @@ BEGIN TRY
         sourceAccountHolder,
         destinationAccountHolder,
         destinationBankName,
-        SWIFT
+        SWIFT,
+        additionalDetails,
+        c.itemCode AS transferType
     FROM [transfer].[transfer]
+    JOIN core.itemName c ON transferTypeId = itemNameId
     WHERE transferId = @transferId
 
     EXEC core.auditCall @procid = @@PROCID, @params = @callParams
