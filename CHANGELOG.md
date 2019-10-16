@@ -1,3 +1,12 @@
+# [6.31.0](https://github.com/softwaregroup-bg/ut-transfer/compare/v6.30.0...v6.31.0) (2019-10-16)
+
+
+### Features
+
+* move currency in ut-function ([#243](https://github.com/softwaregroup-bg/ut-transfer/issues/243)) ([e46a482](https://github.com/softwaregroup-bg/ut-transfer/commit/e46a482))
+
+
+
 # [6.30.0](https://github.com/softwaregroup-bg/ut-transfer/compare/v6.29.7...v6.30.0) (2019-10-01)
 
 
