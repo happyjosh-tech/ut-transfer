@@ -1,3 +1,12 @@
+## [6.31.1](https://github.com/softwaregroup-bg/ut-transfer/compare/v6.31.0...v6.31.1) (2019-10-17)
+
+
+### Bug Fixes
+
+* errors ([d567723](https://github.com/softwaregroup-bg/ut-transfer/commit/d567723))
+
+
+
 # [6.31.0](https://github.com/softwaregroup-bg/ut-transfer/compare/v6.30.0...v6.31.0) (2019-10-16)
 
 
