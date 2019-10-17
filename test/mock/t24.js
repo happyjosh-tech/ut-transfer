@@ -1,6 +1,6 @@
 var currencyFn = require('ut-function.currency');
 
-module.exports = function t24Mock({config, utError: {fetchErrors}}) {
+module.exports = function t24Mock({config, utError: {getError}}) {
     return config && class t24Mock extends require('ut-port-script')(...arguments) {
         get defaults() {
             return {
@@ -8,13 +8,16 @@ module.exports = function t24Mock({config, utError: {fetchErrors}}) {
             };
         }
         handlers() {
-            var getAmount = currencyFn({errors: fetchErrors('currency')}).amount;
+            var getAmount = currencyFn({errors: {
+                invalidCurrency: getError('currency.invalidCurrency'),
+                invalidAmount: getError('currency.invalidAmount')
+            }}).amount;
 
             return {
                 'transfer.push.execute': function(msg) {
                     switch (msg.sourceAccount) {
                         case '10001000000010007':
-                            throw this.errors.getError('transfer.insufficientFunds')();
+                            throw getError('transfer.insufficientFunds')();
                         case 2:
                             break;
                         default:
