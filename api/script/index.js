@@ -538,10 +538,7 @@ module.exports = {
 
         return getTransfer(params)
             .then(transfer => {
-                if (transfer.reversed && transfer.reversedLedger) {
-                    return transfer;
-                }
-                if (!params.reverseAsync) {
+                if (transfer.operation === 'adjustment' || !params.reverseAsync) {
                     return processAny(this.bus, this.log, $meta)(transfer).catch(error => {
                         if (error.type === 'transfer.transferAlreadyReversed') {
                             return transfer;
@@ -549,7 +546,7 @@ module.exports = {
                         throw error;
                     });
                 }
-                if ([4, 5].includes(transfer.acquirerTxState)) {
+                if (transfer.reversed || transfer.reversedLedger || [4, 5].includes(transfer.acquirerTxState)) {
                     return transfer;
                 }
                 return this.bus.importMethod('db/transfer.push.reverseAcquirer')({
