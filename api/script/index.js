@@ -554,6 +554,8 @@ module.exports = {
             const allocateParams = transactionDebitSuspense.prepareAllocationParams(msg)
             const depositAllocations = await this.bus.importMethod('db/transfer.debit.allocationCalculate')(allocateParams, Object.assign({}, $meta))
 
+            //let trxData = transactionDebitSuspense.prepareBulkTrxParams(msg, depositAllocations.allocations, trxParams)
+            
             let trxData = [
                 Object.assign({}, trxParams, {
                     sourceAccount: null,
@@ -563,7 +565,6 @@ module.exports = {
 
                 })
             ]
-            
             depositAllocations.allocations.forEach(floatAccountData => {
                 //trx - allocate deposit to float account
                 const trxFloat = Object.assign({}, trxParams, {
@@ -577,12 +578,24 @@ module.exports = {
             })
 
             trxIds = await this.bus.importMethod('db/transfer.push.createBulk')({ transfer: trxData }, Object.assign({}, $meta) )
+            trxIds = trxIds.transferData.map(trxData => {
+                return {
+                    value: trxData.transferId
+                }
+            })
+            await this.bus.importMethod('db/transfer.push.confirmLedgerBulk')({transferIds: trxIds}, Object.assign({}, $meta))
 
-            //TODO - format by API specif. - returned result
-            return this.bus.importMethod('db/transfer.push.confirmLedgerBulk')({transferIds: trxIds}, Object.assign({}, $meta))
+            let transferBalanceUpdate = transactionDebitSuspense.prepareBalanceParams(msg, depositAllocations)
+            return bus.importMethod('ledger.account.balanceUpdateCheck')({
+                //destinationAccount: transaction.credit,
+                //transferId: transaction.transferId,
+                transferConfirmation: 1,
+                transfer: transferBalanceUpdate
+            }, Object.assign({}, $meta))
         } catch(error) {
             console.log('Add account deposit error', error)
-            this.bus.importMethod('db/transfer.push.failLedgerBulk')({transferIds: trxIds}, Object.assign({}, $meta))
+            if(trxIds)
+                this.bus.importMethod('db/transfer.push.failLedgerBulk')({transferIds: trxIds}, Object.assign({}, $meta))
             throw Error(error)
         }
     }

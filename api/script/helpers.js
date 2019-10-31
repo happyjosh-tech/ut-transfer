@@ -62,6 +62,60 @@ class TransactionDebitSuspense {
         return TransactionDebitSuspense.initTrxField(initValues, msg)
     }
 
+    prepareBulkTrxParams(msg, depositAllocations, trxParams) {
+        let trxData = [
+            Object.assign(
+                {}, 
+                trxParams, 
+                {
+                    sourceAccount: null,
+                    destinationAccount: msg.suspendAccountNumber,
+                    transferCurrency: msg.depositCurrency,
+                    transferAmount: msg.depositAmount,
+                }
+            )
+        ]
+        const transferIdAcquirer = this.generateTransferIdAcquirer()
+        depositAllocations.forEach(floatAccountData => {
+            //trx - allocate deposit to float account
+            const trxFloat = Object.assign(
+                {}, 
+                trxParams, 
+                {
+                    sourceAccount: msg.suspendAccountNumber,
+                    transferCurrency: msg.depositCurrency,
+                    destinationAccount: floatAccountData.destinationAccountNumber,
+                    transferAmount: floatAccountData.transferAmount,
+                    transferIdAcquirer: transferIdAcquirer
+                }
+            )
+            trxData.push(trxFloat)
+        })
+        return trxData
+    }
+
+    prepareBalanceParams(msg, depositAllocations) {
+        let transferBalanceUpdate = [
+            {
+            debit: null,
+            credit: msg.suspendAccountNumber,
+            amount: msg.depositAmount
+            }
+        ]
+
+        depositAllocations.allocations.forEach(floatAccountData => {
+            transferBalanceUpdate.push(
+                {
+                    debit: floatAccountData.sourceAccountNumber,
+                    credit: floatAccountData.destinationAccountNumber,
+                    amount: floatAccountData.transferAmount
+                }
+            )
+        })
+
+        return transferBalanceUpdate
+    }
+
     static initTrxField(initValues, inputData) {
         let fieldValue = {}
         TransactionDebitSuspense.trxFields.forEach( item => {
