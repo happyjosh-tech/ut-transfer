@@ -194,3 +194,13 @@ IF NOT EXISTS( SELECT 1 FROM sys.columns WHERE Name = N'utilityRef' and Object_I
 BEGIN
   ALTER TABLE  [transfer].[transfer] ADD [utilityRef] NVARCHAR(250) NULL
 END
+
+
+IF NOT EXISTS( SELECT 1 FROM sys.columns WHERE Name = N'bankAccountHolder' and Object_ID = Object_ID(N'transfer.transfer'))
+BEGIN
+  ALTER TABLE  [transfer].[transfer] ADD [bankAccountHolder] NVARCHAR(250) NULL
+END
+IF NOT EXISTS( SELECT 1 FROM sys.columns WHERE Name = N'bankAccount' and Object_ID = Object_ID(N'transfer.transfer'))
+BEGIN
+  ALTER TABLE  [transfer].[transfer] ADD bankAccount VARCHAR(100) NULL
+END

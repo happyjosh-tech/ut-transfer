@@ -43,6 +43,8 @@ CREATE TABLE [transfer].[transfer](
     [comment] NVARCHAR(250),
     noteToSelf NVARCHAR(250),
     utilityRef NVARCHAR(250),
+    bankAccountHolder NVARCHAR(250),
+    bankAccount VARCHAR(100),
     CONSTRAINT [pkTransferTransfer] PRIMARY KEY CLUSTERED ([transferId] ASC),
     CONSTRAINT [fkTransferTransfer_TransferType] FOREIGN KEY([transferTypeId]) REFERENCES [core].[itemName] ([itemNameId])
 )
