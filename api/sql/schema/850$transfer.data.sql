@@ -51,3 +51,20 @@ INSERT
     ([actionId], [actionCategoryId], [description], [valueMap])
 VALUES
     (source.[actionId], c.[actionCategoryId], source.[description], source.[valueMap]);
+
+
+DECLARE @itemNameTranslationTT core.itemNameTranslationTT
+DECLARE @meta core.metaDataTT
+
+DECLARE @enLanguageId [tinyint] = (SELECT languageId FROM [core].[language] WHERE iso2Code = 'en');
+
+INSERT INTO @itemNameTranslationTT(itemCode, itemName, itemNameTranslation) 
+VALUES  ('cashInToBankAccountAtAgent', 'cashInToBankAccountAtAgent', 'cash In To Bank Account At Agent' )
+        
+EXEC core.[itemNameTranslation.upload]
+    @itemNameTranslationTT = @itemNameTranslationTT,
+    @languageId = @enLanguageId,
+    @organizationId = NULL,
+    @itemType = 'operation',
+    @meta = @meta
+

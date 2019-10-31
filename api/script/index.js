@@ -6,6 +6,8 @@ const DECLINED = {
 };
 var errors = require('../../errors');
 var currency = require('../../currency');
+var TransactionDebitSuspense = require('./helpers') 
+var bus;
 
 const internalAccountsMapping = {
     bulkCredit: {
@@ -191,6 +193,10 @@ var hashTransferPendingSecurityCode = (bus, transfer) => {
 };
 
 module.exports = {
+    init: function(b) {
+        bus = b;
+    },
+
     'rule.validate': function(params) {
         return ruleValidate(this.bus, params);
     },
@@ -537,6 +543,48 @@ module.exports = {
     },
     'pendingUserTransfers.fetch': function(msg, $meta) {
         return this.bus.importMethod('db/transfer.pendingUserTransfers.fetch')(msg, $meta);
+    },
+    'deposit.add' : async function(msg, $meta) {
+        let trxIds
+
+        try {
+            const transactionDebitSuspense = new TransactionDebitSuspense({ bus })
+            const trxParams = await transactionDebitSuspense.prepareTrxTTData(msg, $meta)
+
+            const allocateParams = transactionDebitSuspense.prepareAllocationParams(msg)
+            const depositAllocations = await this.bus.importMethod('db/transfer.debit.allocationCalculate')(allocateParams, Object.assign({}, $meta))
+
+            let trxData = [
+                Object.assign({}, trxParams, {
+                    sourceAccount: null,
+                    destinationAccount: msg.suspendAccountNumber,
+                    transferCurrency: msg.depositCurrency,
+                    transferAmount: msg.depositAmount,
+
+                })
+            ]
+            
+            depositAllocations.allocations.forEach(floatAccountData => {
+                //trx - allocate deposit to float account
+                const trxFloat = Object.assign({}, trxParams, {
+                    sourceAccount: msg.suspendAccountNumber,
+                    transferCurrency: msg.depositCurrency,
+                    destinationAccount: floatAccountData.destinationAccountNumber,
+                    transferAmount: floatAccountData.transferAmount,
+                    transferIdAcquirer: transactionDebitSuspense.generateTransferIdAcquirer()
+                })
+                trxData.push(trxFloat)
+            })
+
+            trxIds = await this.bus.importMethod('db/transfer.push.createBulk')({ transfer: trxData }, Object.assign({}, $meta) )
+
+            //TODO - format by API specif. - returned result
+            return this.bus.importMethod('db/transfer.push.confirmLedgerBulk')({transferIds: trxIds}, Object.assign({}, $meta))
+        } catch(error) {
+            console.log('Add account deposit error', error)
+            this.bus.importMethod('db/transfer.push.failLedgerBulk')({transferIds: trxIds}, Object.assign({}, $meta))
+            throw Error(error)
+        }
     }
 };
 // todo handle timeout from destination port
