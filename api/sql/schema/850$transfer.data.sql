@@ -68,3 +68,63 @@ EXEC core.[itemNameTranslation.upload]
     @itemType = 'operation',
     @meta = @meta
 
+-- copied from main BA project's ut-transfer
+
+MERGE INTO
+    core.itemName AS target
+USING
+    (VALUES
+        ('deposit','Deposit Savings'),
+        ('withdraw','Withdrawal Savings'),
+        --('withdrawOtp','Withdraw with OTP'),
+        ('transfer','Funds transfer to account'),
+        --('transferOtp','Funds transfer with OTP'),
+        ('balance','Balance Enquiry Savings'),
+        ('ministatement','Mini statement enquiry'),
+        ('fullstatement', 'Full Statement'),
+        --('bill', 'Bill payment'),
+        --('sale', 'Sale'),
+        --('sms', 'SMS registration'),
+        --('changePin', 'PIN change'),
+        --('loanDisburse', 'Loan disbursement'),
+        ('loanRepay', 'Loan Repayment'),
+        --('forex', 'Foreign currency exchange'),
+        ('agentMinistatement', 'Agent Mini Statement'),
+        ('agentFloatRequest', 'Agent Float Request'),
+        ('agentBalance', 'Agent Balance'),
+        ('commission', 'Commission'),
+        ('paymentCreditCard', 'Payment Credit Card'),
+        ('fee', 'Fee'),
+        ('depositDM', 'Deposit Current'),
+        ('withdrawDM', 'Withdrawal Current'),
+        ('withdrawTC', 'Withdrawal Credit Card'),
+        ('balanceDM','Balance Enquiry Current'),
+        ('balanceTC','Balance Enquiry Credit Card'),
+        ('loanRepayCTP', 'Loan Repayment Chepe te Presta'),
+        ('loanRepayCP', 'Loan Repayment Compartamos'),
+        ('loanRepayGE', 'Loan Repayment Genesis'),
+        ('billPaymentEegsa', 'Bill Payment EEGSA'),
+        ('billPaymentDeorsa', 'Bill Payment DEORSA'),
+        ('billPaymentDeocsa', 'Bill Payment DEOCSA'),
+        ('billPaymentEmpagua', 'Bill Payment EMPAGUA'),
+        ('billpaymentAirtimeTigoPost', 'Bill Payment TIGO Post Paid'),
+        ('billpaymentAirtimeClaroPost', 'Bill Payment CLARO Post Paid'),
+        ('billpaymentAirtimeTelefonicaPost', 'Bill Payment TELEFONICA Post Paid'),
+        ('billpaymentAirtimeTelefonicaPre', 'Bill Payment TELEFONICA Pre Paid'),
+        ('billpaymentAirtimeTigoPre', 'Bill Payment TIGO Pre Paid'),
+        ('billpaymentAirtimeClaroPre', 'Bill Payment CLARO Pre Paid'),
+        ('mobileCash', 'Mobile Cash'),
+        ('remittanceWuVigo', 'Remittance Payment WU - VIGO'),
+        ('remittanceMultiBrand', 'Remittance Payment MULTIBRAND')
+    ) AS source (itemCode, itemName)
+JOIN
+	core.itemType t on t.alias='operation'
+ON
+    target.itemCode = source.itemCode
+WHEN MATCHED THEN UPDATE SET target.itemName = source.itemName
+WHEN
+    NOT MATCHED BY TARGET THEN
+INSERT
+    (itemTypeId, itemCode, itemName)
+VALUES
+    (t.itemTypeId, source.itemCode, source.itemName);
