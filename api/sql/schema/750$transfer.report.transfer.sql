@@ -66,10 +66,6 @@ IF OBJECT_ID('tempdb..#transfersReport') IS NOT NULL
             COUNT(*) OVER(PARTITION BY 1) AS [recordsTotal]
         FROM
             [transfer].[transfer] t
-        INNER JOIN
-            [card].[card] c ON c.cardId = t.cardId
-        LEFT JOIN
-            [atm].[terminal] tl ON tl.actorId = t.channelId
         WHERE
             (@transferId IS NULL OR (t.[transferId] = @transferId OR t.transferId LIKE '%' + CAST(@transferId AS VARCHAR(50)) + '%'))
             AND (@accountNumber IS NULL OR t.[sourceAccount] LIKE '%' + @accountNumber + '%')
@@ -79,7 +75,6 @@ IF OBJECT_ID('tempdb..#transfersReport') IS NOT NULL
             AND (@traceNumber IS NULL OR t.[transferId] = @traceNumber OR t.[issuerSerialNumber] = @traceNumber)
             AND (@cardNumberId IS NULL OR t.cardId = @cardNumberId)
             -- AND (@deviceId IS NULL OR t.[requestDetails].value('(/root/terminalId)[1]', 'VARCHAR(8)') LIKE '%' + @deviceId + '%')
-            AND (@deviceId IS NULL OR tl.terminalId LIKE '%' + @deviceId + '%')
             AND (@processingCode IS NULL OR t.[transferTypeId] = @processingCode)
             AND (@merchantName IS NULL OR t.[merchantId] LIKE '%' + @merchantName + '%')
             AND (@channelType IS NULL OR t.[channelType] = @channelType)
@@ -184,8 +179,6 @@ FROM
     #transfersReport r
 JOIN
     transfer.vTransferEvent t ON t.transferId = r.transferId
-JOIN
-    [card].[card] c ON c.cardId = t.cardId
 WHERE
 -- if last page transactions + totals is bigger than pageSize we don't want to show transacions
     (RowNum BETWEEN @startRow AND @endRow) OR ((@startRow >= recordsTotal AND RowNum > recordsTotal - (recordsTotal % @pageSize) AND @lastPageSize <= @pageSize))
